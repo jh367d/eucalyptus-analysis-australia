@@ -1,0 +1,172 @@
+---
+title: "project"
+author: "jack"
+date: "20/07/2021"
+output: html_document
+---
+data from https://doi.org/10.26197/ala.3bf1b394-8646-4e3e-99d9-0ef7a5258d35
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r setup}
+library (galah)
+library (stringr)
+library (rgdal)
+library(sf)
+library(maps)
+library(mapdata)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+```
+
+data from ALA for Eucalypts
+
+```{r pressure, echo=FALSE}
+library(readr)
+records_2021_07_21 <- read_csv("records-2021-07-21/records-2021-07-21.csv")
+View(records_2021_07_21)
+```
+
+now clean with coordinate cleaner 
+```{r}
+library(countrycode)
+library(CoordinateCleaner)
+library(rgbif)
+library(sp)
+library(dplyr)
+```
+
+```{r}
+#columns of interest
+records_filter_1 <- records_2021_07_21 %>%
+  dplyr::select(species, decimalLongitude, decimalLatitude, countryCode, individualCount,
+         family, taxonRank, coordinateUncertaintyInMeters, year,
+         basisOfRecord, institutionCode, datasetName)
+
+```
+
+```{r}
+# get rid of records without coordinates
+records_filter_2 <- records_filter_1%>%
+  filter(!is.na(decimalLongitude))%>%
+  filter(!is.na(decimalLatitude))
+```
+
+
+```{r}
+#plot data on a map to get initial view
+library(ggplot2)
+wm <- borders("world", colour="slategray1", fill="slategray1")
+ggplot()+ coord_fixed()+ wm +
+  geom_point(data = records_filter_2, aes(x = decimalLongitude, y = decimalLatitude),
+             colour = "green", size = 0.5)+
+  theme_bw()
+```
+#from this map ^ it is clear there is still lots of records that need cleaning, with many records outside Australia 
+
+
+```{r}
+#automatic cleaning algorithm of CoordinateCleaner
+library(rnaturalearth)
+#conversion of country code from ISO2c to ISO3c
+records_filter_2$countryCode <-  countrycode(records_filter_2$countryCode, origin =  'iso2c', destination = 'iso3c')
+
+
+#flag problems
+records_filter_2 <- data.frame(records_filter_2)
+flags <- clean_coordinates(x = records_filter_2 ,
+                           lon = "decimalLongitude",
+                           lat = "decimalLatitude",
+                           countries = "countryCode",
+                           species = "species",
+                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
+                                    "zeros", "countries")) 
+summary(flags)
+plot(flags, lon = "decimalLongitude", lat = "decimalLatitude")
+```
+```{r}
+#now remove problematic records
+dat_cl_1 <- records_filter_2[flags$.summary,]
+
+#The flagged records
+dat_fl_1 <- records_filter_2[!flags$.summary,]
+```
+
+
+
+```{r}
+#plot flagged records
+
+wm <- borders("world", colour="slategray1", fill="slategray1")
+ggplot()+ coord_fixed()+ wm +
+  geom_point(data = dat_fl_1, aes(x = decimalLongitude, y = decimalLatitude),
+             colour = "green", size = 0.5)+
+  theme_bw()
+```
+#the clean_coordinates wrapper function was to agrressive and flagged all records
+```{r}
+#Remove records with low coordinate precision 
+#remove all records with a precision below 100 km
+hist(records_filter_2$coordinateUncertaintyInMeters / 1000, breaks = 20)
+
+records_filter_2 <- records_filter_2 %>%
+  filter(coordinateUncertaintyInMeters / 1000 <= 100 | is.na(coordinateUncertaintyInMeters))
+
+#Remove unsuitable data sources, 
+table(records_filter_2$basisOfRecord)
+## 
+##     FOSSIL_SPECIMEN   HUMAN_OBSERVATION MACHINE_OBSERVATION     MATERIAL_SAMPLE         OBSERVATION  PRESERVED_SPECIMEN             UNKNOWN 
+##                 227                3564                   3                  34                   1                 247                 124
+
+records_filter_2 <- filter(records_filter_2, basisOfRecord == "HUMAN_OBSERVATION" |
+                         basisOfRecord == "OBSERVATION" |
+                         basisOfRecord == "PRESERVED_SPECIMEN")
+```
+```{r}
+#remove records with suspicious individual counts
+table(records_filter_2$individualCount)
+```
+
+```{r}
+records_filter_2 <- records_filter_2%>%
+  filter(individualCount > 0 | is.na(individualCount))%>%
+  filter(individualCount < 99 | is.na(individualCount)) 
+```
+
+```{r}
+#exclude based on fixed longitude and latitude
+#i.e remove all points above Cape York, the most North point in Australia 
+dat_fil_3 <- filter(records_filter_2, decimalLatitude < 10.689167)
+```
+
+```{r}
+#plot flagged records
+
+wm <- borders("world", colour="slategray1", fill="slategray1")
+ggplot()+ coord_fixed()+ wm +
+  geom_point(data = dat_fil_3, aes(x = decimalLongitude, y = decimalLatitude),
+             colour = "green", size = 0.5)+
+  theme_bw()
+```
+# ^ Clear that many of the records in europe and North America have been removed, but still many records in Pacific ocean + Africa
+```{r}
+#Flag records based on species natural range
+
+australia <- rnaturalearth::ne_countries(country = 'australia')  %>%
+  sf::st_as_sf()
+
+tmap::qtm(australia)
+
+#filters records to only those in Australia
+records_aus<- st_intersection(dat_fil_3, australia)
+
+tmap::qtm(records_aus)
+```
+
+

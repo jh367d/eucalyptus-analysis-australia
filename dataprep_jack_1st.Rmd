@@ -197,6 +197,6 @@ write.csv(dat_cl_aus,"/Users/jackhanigan/Documents/R/bigdata/BEES3041_BCI\\File 
 
 ```
 
-
+#now import these records into Biodiverse analysis software (http://www.biodiverse.unsw.edu.au), with analyses for phylogenetic endemism and phylogenetic diversity conducted in the software.
 
 

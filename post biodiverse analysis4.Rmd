@@ -1,0 +1,329 @@
+---
+title: "Post_biodiverse_analysis"
+author: "Jack Hanigan"
+date: "31 July 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Analyse phylogenetic endemism and phylogenetic diversity tests 
+
+
+Load required libraries
+```{r}
+library(readr)
+library(ggplot2)
+library(hexbin)
+library(ggpubr)
+library(ggpmisc)
+```
+
+Put the csv files into lists
+```{r}
+file_list_clim <- list.files(path="/Users/jackhanigan/Downloads/Extracted data")
+
+file_list_analysis <- list.files(path="/Users/jackhanigan/Downloads/Analysis")
+
+```
+
+
+
+
+
+load the climate csv files into r
+```{r}
+setwd("/Users/jackhanigan/Downloads/Extracted data")
+
+for (i in 1:length(file_list_clim)) assign(file_list_clim[i], read_csv(file_list_clim[i]))
+```
+
+
+load the analysis csv files into r
+```{r}
+
+setwd("/Users/jackhanigan/Downloads/Analysis")
+
+for (i in 1:length(file_list_analysis)) assign(file_list_analysis[i], read_csv(file_list_analysis[i]))
+```
+
+
+SCATTER PLOTS
+
+plot Ang_CW_PE against climate variables
+```{r}
+plot(Ang_CW_PE.csv[["PE_CWE"]], Ang_bio2_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_CW_PE.csv[["PE_CWE"]], Ang_bio5_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_CW_PE.csv[["PE_CWE"]], Ang_bio6_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_CW_PE.csv[["PE_CWE"]], Ang_bio7_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_CW_PE.csv[["PE_CWE"]], Ang_bio12_at.csv[["wc2_mean"]], log = "xy")
+
+```
+plot Cor_CW_PE against climate variables
+```{r}
+plot(Cor_CW_PE.csv[["PE_CWE"]], Cor_bio1.csv[["wc2_mean"]], log = "xy")
+plot(Cor_CW_PE.csv[["PE_CWE"]], Cor_bio5.csv[["wc2_mean"]], log = "xy")
+plot(Cor_CW_PE.csv[["PE_CWE"]], Cor_bio6.csv[["wc2_mean"]], log = "xy")
+plot(Cor_CW_PE.csv[["PE_CWE"]], Cor_bio7.csv[["wc2_mean"]], log = "xy")
+plot(Cor_CW_PE.csv[["PE_CWE"]], Cor_bio12.csv[["wc2_mean"]], log = "xy")
+```
+
+
+plot Euc_CW_PE against climate variables
+```{r}
+plot(Euc_CW_PE.csv[["PE_CWE"]], Euc_bio1.csv[["wc2_mean"]], log = "xy")
+plot(Euc_CW_PE.csv[["PE_CWE"]], Euc_bio5.csv[["wc2_mean"]], log = "xy")
+plot(Euc_CW_PE.csv[["PE_CWE"]], Euc_bio6.csv[["wc2_mean"]], log = "xy")
+plot(Euc_CW_PE.csv[["PE_CWE"]], Euc_bio7.csv[["wc2_mean"]], log = "xy")
+plot(Euc_CW_PE.csv[["PE_CWE"]], Euc_bio12.csv[["wc2_mean"]], log = "xy")
+```
+
+
+plot Comb_CW_PE against climate variables
+```{r}
+plot(Comb_CW_PE.csv[["PE_CWE"]], Comb_bio1.csv[["wc2_mean"]], log = "xy")
+plot(Comb_CW_PE.csv[["PE_CWE"]], comb_bio5.csv[["wc2_mean"]], log = "xy")
+plot(Comb_CW_PE.csv[["PE_CWE"]], comb_bio6.csv[["wc2_mean"]], log = "xy")
+plot(Comb_CW_PE.csv[["PE_CWE"]], Comb_bio7.csv[["wc2_mean"]], log = "xy")
+plot(Comb_CW_PE.csv[["PE_CWE"]], Comb_bio12.csv[["wc2_mean"]], log = "xy")
+```
+
+
+plot Ang_phy_div angainst climate variables
+```{r}
+plot(Ang_phy_div.csv[["PD"]], Ang_bio2_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_phy_div.csv[["PD"]], Ang_bio5_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_phy_div.csv[["PD"]], Ang_bio6_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_phy_div.csv[["PD"]], Ang_bio7_at.csv[["wc2_mean"]], log = "xy")
+plot(Ang_phy_div.csv[["PD"]], Ang_bio12_at.csv[["wc2_mean"]], log = "xy")
+
+```
+
+
+plot Cor_phy_div angainst climate variables
+```{r}
+plot(Cor_phy_div.csv[["PD"]], Cor_bio1.csv[["wc2_mean"]], log = "xy")
+plot(Cor_phy_div.csv[["PD"]], Cor_bio5.csv[["wc2_mean"]], log = "xy")
+plot(Cor_phy_div.csv[["PD"]], Cor_bio6.csv[["wc2_mean"]], log = "xy")
+plot(Cor_phy_div.csv[["PD"]], Cor_bio7.csv[["wc2_mean"]], log = "xy")
+plot(Cor_phy_div.csv[["PD"]], Cor_bio12.csv[["wc2_mean"]], log = "xy")
+
+```
+
+plot Euc_phy_div angainst climate variables
+```{r}
+plot(Euc_phy_div.csv[["PD"]], Euc_bio1.csv[["wc2_mean"]], log = "xy")
+plot(Euc_phy_div.csv[["PD"]], Euc_bio5.csv[["wc2_mean"]], log = "xy")
+plot(Euc_phy_div.csv[["PD"]], Euc_bio6.csv[["wc2_mean"]], log = "xy")
+plot(Euc_phy_div.csv[["PD"]], Euc_bio7.csv[["wc2_mean"]], log = "xy")
+plot(Euc_phy_div.csv[["PD"]], Euc_bio12.csv[["wc2_mean"]], log = "xy")
+
+```
+
+plot Comb_phy_div angainst climate variables
+```{r}
+plot(Comb_phy_div.csv[["PD"]], Comb_bio1.csv[["wc2_mean"]], log = "xy")
+plot(Comb_phy_div.csv[["PD"]], comb_bio5.csv[["wc2_mean"]], log = "xy")
+plot(Comb_phy_div.csv[["PD"]], comb_bio6.csv[["wc2_mean"]], log = "xy")
+plot(Comb_phy_div.csv[["PD"]], Comb_bio7.csv[["wc2_mean"]], log = "xy")
+plot(Comb_phy_div.csv[["PD"]], Comb_bio12.csv[["wc2_mean"]], log = "xy")
+
+```
+
+SCATTER PLOT REGRESSIONS
+
+
+Comb5/CWPE regression (r=0.38)
+```{r}
+Comb5_CWPE <- ggplot(data=NULL, aes(x=comb_bio5.csv$wc2_mean, y=Comb_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point() +xlab('Bioclim5') +ylab('Eucalypt Phylogenetic Endemism') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+
+my.formula <-y ~ x
+
+Comb5_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+ggsave("Comb5_CWPE_scat.png")
+```
+Comb6/CWPE (r=0.14)
+```{r}
+Comb6_CWPE <- ggplot(data=NULL, aes(x=comb_bio6.csv$wc2_mean, y=Comb_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Comb6_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+
+Euc6/CWPE (r=0.12)
+```{r}
+Euc6_CWPE <- ggplot(data=NULL, aes(x=Euc_bio6.csv$wc2_mean, y=Euc_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Euc6_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Euc5/CWPE (r=0.37)
+```{r}
+Euc5_CWPE <- ggplot(data=NULL, aes(x=Euc_bio5.csv$wc2_mean, y=Euc_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()+xlab('Bioclim5') +ylab('Eucalyptus Phylogenetic Endemism') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+
+my.formula <-y ~ x
+
+Euc5_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+ggsave("Euc5_CWPE_scat.png")
+```
+Euc12/CWPE (r=0.09)
+```{r}
+Euc12_CWPE <- ggplot(data=NULL, aes(x=Euc_bio12.csv$wc2_mean, y=Euc_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Euc12_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+
+Cor5/CWPE (r=0.09)
+```{r}
+
+
+ Cor5_CWPE <- ggplot(data=NULL, aes(x=Cor_bio5.csv$wc2_mean, y=Cor_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+ my.formula <-y ~ x
+
+ Cor5_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+
+
+Cor6/CWPE (r=<0.01)
+```{r}
+Cor6_CWPE <- ggplot(data=NULL, aes(x=Cor_bio6.csv$wc2_mean, y=Cor_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Cor6_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Cor12/CWPE (r=0.11)
+```{r}
+Cor12_CWPE <- ggplot(data=NULL, aes(x=Cor_bio12.csv$wc2_mean, y=Cor_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Cor12_CWPE + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+
+#phylo regression
+Cor5_Phydiv(r=0.13)
+```{r}
+
+Cor5_Phydiv <- ggplot(data=NULL, aes(x=Cor_bio5.csv$wc2_mean, y=Cor_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+my.formula <-y ~ x
+Cor5_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+
+
+Cor6_Phydiv(r=0.11)
+```{r}
+Cor6_Phydiv <- ggplot(data=NULL, aes(x=Cor_bio6.csv$wc2_mean, y=Cor_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Cor6_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Cor7_Phydiv(r=0.4)
+```{r}
+Cor7_Phydiv <- ggplot(data=NULL, aes(x=Cor_bio7.csv$wc2_mean, y=Cor_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Cor7_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Euc5_Phydiv(r=0.4)
+```{r}
+Euc5_Phydiv <- ggplot(data=NULL, aes(x=Euc_bio5.csv$wc2_mean, y=Euc_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point() +xlab('Bioclim5') +ylab('Eucalyptus Plylogenetic Diversity') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+
+my.formula <-y ~ x
+
+Euc5_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+ggsave("Euc5_Phydiv_scat.png")
+```
+Euc6_Phydiv(r=0.13)
+```{r}
+Euc6_Phydiv <- ggplot(data=NULL, aes(x=Euc_bio6.csv$wc2_mean, y=Euc_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Euc6_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Euc12_Phydiv(r=0.13)
+```{r}
+Euc12_Phydiv <- ggplot(data=NULL, aes(x=Euc_bio12.csv$wc2_mean, y=Euc_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Euc12_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Comb1_Phydiv(r=0.21)
+```{r}
+Comb1_Phydiv <- ggplot(data=NULL, aes(x=Comb_bio1.csv$wc2_mean, y=Comb_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Comb1_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Comb5_Phydiv(r=0.35)
+```{r}
+Comb5_Phydiv <- ggplot(data=NULL, aes(x=comb_bio5.csv$wc2_mean, y=Comb_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point() +xlab('Bioclim5') +ylab('Eucalypt Phylogenetic Diversity') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+
+my.formula <-y ~ x
+
+Comb5_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+ggsave("Comb5_Phydiv_scat.png")
+```
+Comb6_Phydiv(r=0.07)
+```{r}
+Comb6_Phydiv <- ggplot(data=NULL, aes(x=comb_bio6.csv$wc2_mean, y=Comb_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Comb6_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+Comb12_Phydiv(r=0.22)
+```{r}
+Comb12_Phydiv <- ggplot(data=NULL, aes(x=Comb_bio12.csv$wc2_mean, y=Comb_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') + geom_smooth(method=lm) + geom_point()
+
+my.formula <-y ~ x
+
+Comb12_Phydiv + stat_poly_eq(formula=my.formula, aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), parse = TRUE)
+```
+HEX PLOTS
+
+Comb5 PD Hex
+```{r}
+Comb5_Phydiv_hex <- ggplot(data=NULL, aes(x=comb_bio5.csv$wc2_mean, y=Comb_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') +xlab('Bioclim5') +ylab('Eucalypt Phylogenetic Diversity') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+Comb5_Phydiv_hex + geom_hex(bins=35) +scale_fill_gradient(low="springgreen2",high="steelblue1") +theme_bw()
+ggsave('Comb5_PD_hex.png')
+```
+
+
+Comb5 PE Hex
+```{r}
+Comb5_CWPE_hex <- ggplot(data=NULL, aes(x=comb_bio5.csv$wc2_mean, y=Comb_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') +xlab('Bioclim5') +ylab('Eucalypt Phylogenetic Endemism') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+Comb5_CWPE_hex + geom_hex(bins=35) +scale_fill_gradient(low="springgreen2",high="steelblue1") +theme_bw()
+ggsave('Comb5_PE_hex.png')
+```
+
+
+Euc5 PD Hex
+```{r}
+Euc5_Phydiv_hex <- ggplot(data=NULL, aes(x=Euc_bio5.csv$wc2_mean, y=Euc_phy_div.csv$PD)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') +xlab('Bioclim5') +ylab('Eucalyptus Phylogenetic Diversity') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+Comb5_Phydiv_hex + geom_hex(bins=35) +scale_fill_gradient(low="springgreen2",high="steelblue1") +theme_bw()
+ggsave('Euc5_PD_hex.png')
+```
+
+
+Euc5 PE Hex
+```{r}
+Euc5_CWPE_hex <- ggplot(data=NULL, aes(x=Euc_bio5.csv$wc2_mean, y=Euc_CW_PE.csv$PE_CWE)) + scale_x_continuous(trans = 'log') + scale_y_continuous(trans = 'log') +xlab('Bioclim5') +ylab('Eucalyptus Phylogenetic Endemism') + theme(axis.text.x = element_blank(),axis.text.y = element_blank())
+Comb5_CWPE_hex + geom_hex(bins=35) +scale_fill_gradient(low="springgreen2",high="steelblue1") +theme_bw()
+ggsave('Euc5_PE_hex.png')
+```
+
+
+

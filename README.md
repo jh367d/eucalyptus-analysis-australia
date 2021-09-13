@@ -8,5 +8,5 @@ Dataprep_jack_1st.rmd where the data is cleaned from the Atlas of Living Austral
 
 The cleaned data is then imported in to Biodiverse analysis software (http://www.biodiverse.unsw.edu.au), with analyses for phylogenetic endemism and phylogenetic diversity conducted in the software.
 
-The results from Biodiverse are then imported back into R and analysed further with Post_biodiverse_analysis.rmd for results and graphs. 
+The results from Biodiverse are then imported back into R and analysed further with Post_biodiverse_analysis4.rmd for results and graphs. 
 
